@@ -1,5 +1,6 @@
 import { getProductBySlug, getProducts } from "@/lib/fourthwall";
 import ProductActions from "@/components/ProductActions";
+import ImageGallery from "@/components/ImageGallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
@@ -33,30 +34,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Images */}
-        <div className="space-y-4">
-          <div className="aspect-square bg-surface-container rounded-2xl overflow-hidden border border-outline-variant">
-            {product.images.length > 0 ? (
-              <img 
-                src={product.images[0].url} 
-                alt={product.name} 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-300">
-                <span className="material-symbols-outlined text-6xl">image</span>
-              </div>
-            )}
-          </div>
-          {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-4">
-              {product.images.slice(1).map((img, i) => (
-                <div key={i} className="aspect-square bg-surface-container rounded-xl overflow-hidden border border-outline-variant cursor-pointer hover:border-primary transition-colors">
-                  <img src={img.url} alt={`${product.name} view ${i+2}`} className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ImageGallery images={product.images} productName={product.name} />
 
         {/* Info & Actions */}
         <div className="flex flex-col">
