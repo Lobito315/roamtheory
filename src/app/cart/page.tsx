@@ -7,7 +7,7 @@ const TAX_RATE = 0.085;
 const FREE_SHIPPING_THRESHOLD = 150;
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, subtotal } = useCart();
+  const { items, removeItem, updateQuantity, subtotal, checkoutUrl } = useCart();
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 15;
   const tax = subtotal * TAX_RATE;
   const total = subtotal + shipping + tax;
@@ -129,10 +129,13 @@ export default function Cart() {
               </div>
 
               <div className="space-y-4">
-                <button className="w-full py-4 bg-[#c2410c] text-white rounded-lg font-bold tracking-wide hover:bg-[#9a3412] transition-all flex items-center justify-center group">
+                <a 
+                  href={checkoutUrl}
+                  className="w-full py-4 bg-[#c2410c] text-white rounded-lg font-bold tracking-wide hover:bg-[#9a3412] transition-all flex items-center justify-center group"
+                >
                   Checkout Securely
                   <span className="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </button>
+                </a>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg bg-surface-container-low opacity-70">
                     <span className="material-symbols-outlined mb-1">lock</span>

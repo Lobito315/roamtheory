@@ -3,7 +3,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export interface CartItem {
-  id: string;
+  id: string; // We'll use the Fourthwall variantId as the unique ID in cart
+  productId: string;
+  variantId: string;
   name: string;
   price: number;
   image: string;
@@ -19,6 +21,7 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
+  checkoutUrl: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -72,8 +75,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+  // Generate Fourthwall Checkout URL
+  const shopDomain = "roamtheory-shop.fourthwall.com";
+  const productString = items.map(item => `${item.variantId}:${item.quantity}`).join(",");
+  const checkoutUrl = items.length > 0 
+    ? `https://${shopDomain}/cart/checkout?products=${productString}&currency=USD` 
+    : "#";
+
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, subtotal }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, subtotal, checkoutUrl }}>
       {children}
     </CartContext.Provider>
   );
