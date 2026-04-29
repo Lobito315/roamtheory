@@ -3,22 +3,27 @@
 import { Amplify } from "aws-amplify";
 import config from "../amplifyconfiguration.json";
 
-const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
+const isLocalhost =
+  typeof window !== "undefined" &&
+  window.location.hostname === "localhost";
 
-const productionUrl = "https://main.d37zocj71ah20c.amplifyapp.com/";
-const localUrl = "http://localhost:3000/";
+const redirectUrl = isLocalhost
+  ? "http://localhost:3000/"
+  : "https://main.d37zocj71ah20c.amplifyapp.com/";
 
-Amplify.configure(
-  {
-    ...config,
-    oauth: {
-      ...config.oauth,
-      redirectSignIn: isLocalhost ? localUrl : productionUrl,
-      redirectSignOut: isLocalhost ? localUrl : productionUrl,
-    },
+// amplifyconfiguration.json uses the legacy config shape.
+// We patch the oauth redirect URLs at runtime based on environment.
+const patchedConfig = {
+  ...config,
+  oauth: {
+    ...config.oauth,
+    redirectSignIn: redirectUrl,
+    redirectSignOut: redirectUrl,
   },
-  { ssr: true }
-);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+Amplify.configure(patchedConfig as any, { ssr: true });
 
 export default function ConfigureAmplifyClientSide() {
   return null;
