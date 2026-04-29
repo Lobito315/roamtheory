@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ConfigureAmplifyClientSide from "@/components/ConfigureAmplifyClientSide";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Roamtheory | High-Performance Gear for Modern Nomads",
@@ -21,10 +22,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body-md text-body-md selection:bg-orange-100 antialiased">
-        <ConfigureAmplifyClientSide />
-        <Navbar />
-        {children}
-        <Footer />
+        <CartProvider>
+          <ConfigureAmplifyClientSide />
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

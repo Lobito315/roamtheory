@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getCurrentUser, signOut } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
+import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { totalItems } = useCart();
 
   useEffect(() => {
     // Check initial session
@@ -87,7 +89,11 @@ export default function Navbar() {
 
           <Link href="/cart" className="p-2 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-md transition-all active:opacity-80 active:scale-95 relative flex items-center justify-center">
             <span className="material-symbols-outlined text-slate-900 dark:text-slate-50">shopping_cart</span>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-orange-600 rounded-full"></span>
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-orange-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce-once">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
           </Link>
         </div>
       </div>
