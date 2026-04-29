@@ -1,0 +1,22 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-roamtheoryproy-dev-c005d-authRole",
+      "UnauthRoleArn": "arn:aws:iam::090899138535:role/amplify-roamtheoryproy-dev-c005d-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::090899138535:role/amplify-roamtheoryproy-dev-c005d-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-roamtheoryproy-dev-c005d-deployment",
+      "UnauthRoleName": "amplify-roamtheoryproy-dev-c005d-unauthRole",
+      "StackName": "amplify-roamtheoryproy-dev-c005d",
+      "StackId": "arn:aws:cloudformation:us-east-2:090899138535:stack/amplify-roamtheoryproy-dev-c005d/d2ae8690-434a-11f1-a884-06a511901b8d",
+      "AmplifyAppId": "d2lcd4vooyl43n"
+    },
+    "categories": {
+      "auth": {
+        "roamtheoryproy725f97ec": {
+          "googleClientId": "55297793805-votlfvjtmgl92b1nchh8ar3ma18c1g3g.apps.googleusercontent.com"
+        }
+      }
+    }
+  }
+}
