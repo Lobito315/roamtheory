@@ -5,9 +5,21 @@ export default function Footer() {
     <footer className="w-full mt-20 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-8 py-16 max-w-[1280px] mx-auto font-['Space_Grotesk'] text-sm tracking-wide">
         <div className="col-span-1 md:col-span-1">
-          <span className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-4 block">Roamtheory</span>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="flex items-center justify-center w-7 h-7 rounded-md bg-slate-900 dark:bg-white">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-white dark:text-slate-900">
+                <circle cx="12" cy="5" r="2"/>
+                <line x1="12" y1="7" x2="12" y2="19"/>
+                <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+                <line x1="7" y1="8" x2="17" y2="16" stroke="#f97316" strokeWidth="1.8"/>
+              </svg>
+            </span>
+            <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-50">
+              ANCHOR<span className="text-orange-500">NONE</span>
+            </span>
+          </div>
           <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
-            © 2024 Roamtheory. Built for the modern nomad.
+            © 2026 AnchorNone. No anchor, no limits.
           </p>
           <div className="flex space-x-4">
             <Link className="text-slate-400 hover:text-slate-900 transition-colors" href="#">

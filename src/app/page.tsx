@@ -1,31 +1,14 @@
 import Link from "next/link";
 import { getProducts } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
+import HeroVideo from "@/components/HeroVideo";
 
 export default async function Home() {
   const products = await getProducts();
 
   return (
     <main className="max-w-[1280px] mx-auto px-6 pt-12 pb-xl">
-      {/* Hero Section */}
-      <section className="mb-xl relative rounded-xl overflow-hidden aspect-[21/9] min-h-[400px]">
-        <img
-          alt="Digital nomad working in a modern scenic location"
-          className="absolute inset-0 w-full h-full object-cover"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl5k7OSn6cyAQn0yS2t_o0r5CbWOuLw79ckyLa9W52r2jr7whuzAONjQxncfZ3w0G1OELkytMtdSjjT9swHa7lX32alTyIF7L-88AnmMCccqaYo1IBv96jF6B8EDmB7xZ80QWz3suE5t2sX16VlQTmB6Jtv-gXRa-m0VmuHJn8k0COK6cFbShH6SBnsUPDBgAXLpNlluFkgW8PyL4liaK9O61MhOrSG9LMzPSBBvXG0z_wV80-i51IlTxv21RpKAc_Mv6VI2fe9rY"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex items-center">
-          <div className="max-w-xl px-12">
-            <span className="text-orange-500 font-label-caps uppercase tracking-widest mb-4 block">Field Tested Gear</span>
-            <h1 className="font-h1 text-h1 text-white mb-6">Equipping the Modern Nomad</h1>
-            <p className="text-body-lg text-white/80 mb-8 max-w-md">Precision-engineered tools for the professional traveler. Built for performance, designed for the journey.</p>
-            <div className="flex items-center space-x-4">
-              <a className="bg-white text-slate-900 px-8 py-4 font-bold text-sm tracking-widest uppercase hover:bg-orange-600 hover:text-white transition-all duration-300" href="#products">Shop New Arrivals</a>
-              <a className="text-white border-b-2 border-white/30 hover:border-orange-600 transition-colors py-1 font-semibold text-sm" href="#">View Lookbook</a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroVideo />
 
       {/* Featured Collections */}
       <section className="mb-xl">

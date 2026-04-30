@@ -6,8 +6,14 @@ import ConfigureAmplifyClientSide from "@/components/ConfigureAmplifyClientSide"
 import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
-  title: "Roamtheory | High-Performance Gear for Modern Nomads",
-  description: "Equipping the Modern Nomad. Precision-engineered tools for the professional traveler.",
+  title: "AnchorNone | Gear & Apparel for the Modern Nomad",
+  description: "AnchorNone — No anchor, no limits. Premium gear and apparel precision-engineered for the professional traveler and digital nomad.",
+  keywords: "digital nomad, travel gear, nomad apparel, tech accessories, lifestyle brand",
+  openGraph: {
+    title: "AnchorNone | Gear & Apparel for the Modern Nomad",
+    description: "No anchor, no limits. Premium gear and apparel for the modern nomad.",
+    siteName: "AnchorNone",
+  },
 };
 
 export default function RootLayout({

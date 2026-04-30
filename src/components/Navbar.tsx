@@ -49,8 +49,20 @@ export default function Navbar() {
   return (
     <nav className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm sticky top-0 z-50">
       <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1280px] mx-auto font-['Space_Grotesk'] antialiased">
-        <Link className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50" href="/">
-          Roamtheory
+        <Link className="flex items-center gap-2 group" href="/">
+          {/* Anchor icon */}
+          <span className="flex items-center justify-center w-8 h-8 rounded-md bg-slate-900 dark:bg-white group-hover:bg-orange-500 dark:group-hover:bg-orange-500 transition-colors duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white dark:text-slate-900">
+              <circle cx="12" cy="5" r="2"/>
+              <line x1="12" y1="7" x2="12" y2="19"/>
+              <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+              {/* Strike-through for 'freedom' */}
+              <line x1="7" y1="8" x2="17" y2="16" stroke="#f97316" strokeWidth="1.8"/>
+            </svg>
+          </span>
+          <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">
+            ANCHOR<span className="text-orange-500">NONE</span>
+          </span>
         </Link>
         <div className="hidden md:flex items-center space-x-8">
           <Link className="text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" href="/">
