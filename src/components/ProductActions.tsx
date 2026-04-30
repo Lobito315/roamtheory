@@ -28,7 +28,7 @@ export default function ProductActions({ product }: { product: FourthwallProduct
     // In a real app we might redirect instantly to checkoutUrl 
     // but the context checkoutUrl will take a tick to update since state needs to sync.
     // For now we just add to cart. Alternatively we could construct the URL right here.
-    const shopDomain = "roamtheory-shop.fourthwall.com";
+    const shopDomain = "anchornone-shop.fourthwall.com";
     window.location.href = `https://${shopDomain}/cart/checkout?products=${selectedVariant.id}:1&currency=USD`;
   };
 

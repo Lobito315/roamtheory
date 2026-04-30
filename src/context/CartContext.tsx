@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   // Generate Fourthwall Checkout URL
-  const shopDomain = "roamtheory-shop.fourthwall.com";
+  const shopDomain = "anchornone-shop.fourthwall.com";
   const productString = items.map(item => `${item.variantId}:${item.quantity}`).join(",");
   const checkoutUrl = items.length > 0 
     ? `https://${shopDomain}/cart/checkout?products=${productString}&currency=USD` 
