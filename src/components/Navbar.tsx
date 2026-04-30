@@ -56,7 +56,7 @@ export default function Navbar() {
           <Link className="text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" href="/">
             Shop
           </Link>
-          <Link className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors" href="#">
+          <Link className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors" href="/collections">
             Collections
           </Link>
           <Link className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors" href="#">

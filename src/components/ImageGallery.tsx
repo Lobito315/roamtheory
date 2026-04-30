@@ -13,20 +13,33 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   const [zoomStyle, setZoomStyle] = useState({});
   const imageRef = useRef<HTMLImageElement>(null);
 
+  const lensSize = 200; // Diameter of the magnifying glass
+  const zoomFactor = 2.5;
+
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!imageRef.current) return;
     
     const { left, top, width, height } = imageRef.current.getBoundingClientRect();
     
-    // Calculate cursor position as a percentage of the image dimensions
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
+    // Cursor position relative to image container
+    const x = e.clientX - left;
+    const y = e.clientY - top;
     
     setZoomStyle({
       backgroundImage: `url(${images[currentIndex].url})`,
-      backgroundPosition: `${x}% ${y}%`,
-      backgroundSize: "250%", // Zoom level
-      display: "block"
+      backgroundSize: `${width * zoomFactor}px ${height * zoomFactor}px`,
+      backgroundPosition: `-${x * zoomFactor - lensSize / 2}px -${y * zoomFactor - lensSize / 2}px`,
+      left: `${x - lensSize / 2}px`,
+      top: `${y - lensSize / 2}px`,
+      width: `${lensSize}px`,
+      height: `${lensSize}px`,
+      borderRadius: "50%",
+      position: "absolute",
+      pointerEvents: "none",
+      border: "4px solid white",
+      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+      display: "block",
+      zIndex: 10,
     });
   };
 
@@ -60,18 +73,12 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
           ref={imageRef}
           src={images[currentIndex].url} 
           alt={`${productName} view ${currentIndex + 1}`} 
-          className={`w-full h-full object-cover transition-opacity duration-300 ${isZooming ? 'opacity-0' : 'opacity-100'}`}
+          className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal"
         />
         
-        {/* Zoomed Overlay */}
+        {/* Zoomed Overlay (Lupa) */}
         {isZooming && (
-          <div 
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              ...zoomStyle,
-              backgroundRepeat: 'no-repeat',
-            }}
-          />
+          <div style={{ ...zoomStyle, backgroundRepeat: 'no-repeat' }} />
         )}
       </div>
 

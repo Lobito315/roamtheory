@@ -35,8 +35,55 @@ export async function getProducts(): Promise<FourthwallProduct[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<FourthwallProduct | null> {
-  // Since there isn't a direct endpoint to get by slug with the public token easily documented,
-  // we fetch all and filter.
-  const products = await getProducts();
-  return products.find(p => p.slug === slug) || null;
+  // First try the 'all' collection
+  let products = await getProducts();
+  let found = products.find(p => p.slug === slug);
+  if (found) return found;
+
+  // If not found in the first page of 'all', search in other collections
+  const collections = await getCollections();
+  for (const collection of collections) {
+    if (collection.slug === 'all') continue;
+    const collProducts = await getCollectionProducts(collection.slug);
+    found = collProducts.find(p => p.slug === slug);
+    if (found) return found;
+  }
+  
+  return null;
+}
+
+export interface FourthwallCollection {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: { url: string };
+}
+
+export async function getCollections(): Promise<FourthwallCollection[]> {
+  const res = await fetch(`${API_URL}/collections?storefront_token=${STOREFRONT_TOKEN}`, {
+    next: { revalidate: 60 } // Cache for 1 minute
+  });
+  
+  if (!res.ok) {
+    console.error("Failed to fetch collections from Fourthwall", await res.text());
+    return [];
+  }
+
+  const data = await res.json();
+  return data.results || [];
+}
+
+export async function getCollectionProducts(handle: string): Promise<FourthwallProduct[]> {
+  const res = await fetch(`${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}`, {
+    next: { revalidate: 60 } // Cache for 1 minute
+  });
+  
+  if (!res.ok) {
+    console.error(`Failed to fetch products for collection ${handle}`, await res.text());
+    return [];
+  }
+
+  const data = await res.json();
+  return data.results || [];
 }
