@@ -2,6 +2,9 @@
 const STOREFRONT_TOKEN = "ptkn_" + "2436059d-658e-415e-bcdd-e73d0ae87625";
 const API_URL = "https://storefront-api.fourthwall.com/v1";
 
+// Fetch options: no cache so the store always reflects live Fourthwall inventory
+const fetchOptions: RequestInit = { cache: "no-store" };
+
 export interface FourthwallVariant {
   id: string;
   name: string;
@@ -21,9 +24,10 @@ export interface FourthwallProduct {
 }
 
 export async function getProducts(): Promise<FourthwallProduct[]> {
-  const res = await fetch(`${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}`, {
-    next: { revalidate: 60 } // Cache for 1 minute
-  });
+  const res = await fetch(
+    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}`,
+    fetchOptions
+  );
   
   if (!res.ok) {
     console.error("Failed to fetch products from Fourthwall", await res.text());
@@ -61,9 +65,10 @@ export interface FourthwallCollection {
 }
 
 export async function getCollections(): Promise<FourthwallCollection[]> {
-  const res = await fetch(`${API_URL}/collections?storefront_token=${STOREFRONT_TOKEN}`, {
-    next: { revalidate: 60 } // Cache for 1 minute
-  });
+  const res = await fetch(
+    `${API_URL}/collections?storefront_token=${STOREFRONT_TOKEN}`,
+    fetchOptions
+  );
   
   if (!res.ok) {
     console.error("Failed to fetch collections from Fourthwall", await res.text());
@@ -75,9 +80,10 @@ export async function getCollections(): Promise<FourthwallCollection[]> {
 }
 
 export async function getCollectionProducts(handle: string): Promise<FourthwallProduct[]> {
-  const res = await fetch(`${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}`, {
-    next: { revalidate: 60 } // Cache for 1 minute
-  });
+  const res = await fetch(
+    `${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}`,
+    fetchOptions
+  );
   
   if (!res.ok) {
     console.error(`Failed to fetch products for collection ${handle}`, await res.text());
