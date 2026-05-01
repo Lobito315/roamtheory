@@ -23,12 +23,45 @@ export interface FourthwallProduct {
   variants: FourthwallVariant[];
 }
 
-export async function getProducts(): Promise<FourthwallProduct[]> {
+export interface FourthwallProductsPage {
+  products: FourthwallProduct[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// Fetch a specific page of products from Fourthwall
+export async function getProductsPage(
+  page = 1,
+  pageSize = 12
+): Promise<FourthwallProductsPage> {
   const res = await fetch(
-    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}`,
+    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}&page=${page}&page_size=${pageSize}`,
     fetchOptions
   );
-  
+
+  if (!res.ok) {
+    console.error("Failed to fetch products from Fourthwall", await res.text());
+    return { products: [], total: 0, page, pageSize, totalPages: 0 };
+  }
+
+  const data = await res.json();
+  const products: FourthwallProduct[] = data.results || [];
+  // Fourthwall may return total_results; fall back to products.length
+  const total: number = data.total_results ?? data.total ?? products.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  return { products, total, page, pageSize, totalPages };
+}
+
+// Legacy helper — returns first page of products (used by other parts of the app)
+export async function getProducts(): Promise<FourthwallProduct[]> {
+  const res = await fetch(
+    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}&page_size=100`,
+    fetchOptions
+  );
+
   if (!res.ok) {
     console.error("Failed to fetch products from Fourthwall", await res.text());
     return [];

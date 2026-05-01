@@ -1,10 +1,22 @@
 import Link from "next/link";
-import { getProducts } from "@/lib/fourthwall";
+import { getProductsPage } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
 import HeroVideo from "@/components/HeroVideo";
 
-export default async function Home() {
-  const products = await getProducts();
+const PAGE_SIZE = 9; // products per page (3×3 grid)
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, parseInt(pageParam || "1", 10));
+
+  const { products, total, totalPages } = await getProductsPage(currentPage, PAGE_SIZE);
+
+  const hasPrev = currentPage > 1;
+  const hasNext = currentPage < totalPages;
 
   return (
     <main className="max-w-[1280px] mx-auto px-6 pt-12 pb-xl">
@@ -71,7 +83,9 @@ export default async function Home() {
         {/* Product Grid */}
         <div className="flex-grow">
           <div className="flex justify-between items-center mb-8">
-            <span className="text-label-caps text-on-surface-variant">Showing {products.length} products</span>
+            <span className="text-label-caps text-on-surface-variant">
+              Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, total)} of {total} products
+            </span>
             <div className="flex items-center space-x-2">
               <span className="text-label-caps text-on-surface-variant">Sort by</span>
               <select className="bg-transparent border-none font-medium text-sm focus:ring-0 cursor-pointer">
@@ -85,7 +99,6 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {products.map((product) => {
-              // We'll just display the first variant's price
               const defaultVariant = product.variants[0];
               const price = defaultVariant?.unitPrice ? defaultVariant.unitPrice.value : 0;
               const hasMultipleVariants = product.variants.length > 1;
@@ -111,7 +124,7 @@ export default async function Home() {
                     <h3 className="font-h3 text-body-lg text-primary mb-4 group-hover:text-orange-600 transition-colors">{product.name}</h3>
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="font-h3 text-h3">${price.toFixed(2)}</span>
+                        <span className="font-h3 text-h3">US${price.toFixed(2)}</span>
                       </div>
                       <AddToCartButton product={product} />
                     </div>
@@ -122,15 +135,52 @@ export default async function Home() {
           </div>
 
           {/* Pagination */}
-          <div className="mt-xl flex justify-center items-center space-x-4">
-            <button className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors opacity-50 cursor-not-allowed">
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button className="w-12 h-12 flex items-center justify-center bg-slate-900 text-white font-bold">1</button>
-            <button className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors">
-              <span className="material-symbols-outlined">chevron_right</span>
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="mt-xl flex justify-center items-center space-x-2">
+              {/* Prev */}
+              {hasPrev ? (
+                <Link
+                  href={`/?page=${currentPage - 1}#products`}
+                  className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors"
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </Link>
+              ) : (
+                <span className="w-12 h-12 flex items-center justify-center border border-slate-200 opacity-30 cursor-not-allowed">
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </span>
+              )}
+
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <Link
+                  key={p}
+                  href={`/?page=${p}#products`}
+                  className={`w-12 h-12 flex items-center justify-center font-bold transition-colors ${
+                    p === currentPage
+                      ? "bg-slate-900 text-white"
+                      : "border border-slate-200 hover:bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {p}
+                </Link>
+              ))}
+
+              {/* Next */}
+              {hasNext ? (
+                <Link
+                  href={`/?page=${currentPage + 1}#products`}
+                  className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors"
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </Link>
+              ) : (
+                <span className="w-12 h-12 flex items-center justify-center border border-slate-200 opacity-30 cursor-not-allowed">
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>
