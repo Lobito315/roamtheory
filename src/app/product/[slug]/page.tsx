@@ -1,4 +1,4 @@
-import { getProductBySlug, getProducts, getAllProducts } from "@/lib/fourthwall";
+import { getProductBySlug, getAllProducts } from "@/lib/fourthwall";
 import ProductActions from "@/components/ProductActions";
 import ImageGallery from "@/components/ImageGallery";
 import RelatedProducts from "@/components/RelatedProducts";
@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // Fetch current product and all products in parallel
   const [product, allProducts] = await Promise.all([
     getProductBySlug(resolvedParams.slug),
-    getProducts(),
+    getAllProducts(),
   ]);
 
   if (!product) {

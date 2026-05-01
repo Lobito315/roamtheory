@@ -71,42 +71,42 @@ export async function getProducts(): Promise<FourthwallProduct[]> {
   return data.results || [];
 }
 
-// Tries to fetch all products at once (used by generateStaticParams at build time)
+// Paginates through ALL pages of the Fourthwall API and returns every product.
+// Used by generateStaticParams (build time) and getProductBySlug.
 export async function getAllProducts(): Promise<FourthwallProduct[]> {
-  // Try with a high page_size first; fall back to default if it fails
-  const tryFetch = async (params: string) => {
+  const pageSize = 20;
+  const all: FourthwallProduct[] = [];
+  let page = 1;
+
+  while (true) {
     const res = await fetch(
-      `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}${params}`,
+      `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}&page=${page}&page_size=${pageSize}`,
       fetchOptions
     );
-    if (!res.ok) return null;
+
+    if (!res.ok) {
+      console.error(`getAllProducts page ${page} failed:`, await res.text());
+      break;
+    }
+
     const data = await res.json();
-    return (data.results as FourthwallProduct[]) || [];
-  };
+    const results: FourthwallProduct[] = data.results || [];
+    all.push(...results);
 
-  const withLimit = await tryFetch("&page_size=200");
-  if (withLimit && withLimit.length > 0) return withLimit;
+    // Detect last page
+    const total: number = data.total_results ?? data.total ?? results.length;
+    if (all.length >= total || results.length < pageSize) break;
+    page++;
+  }
 
-  // Fallback: plain fetch
-  return (await tryFetch("")) ?? [];
+  console.log(`getAllProducts: fetched ${all.length} products across ${page} page(s)`);
+  return all;
 }
 
 export async function getProductBySlug(slug: string): Promise<FourthwallProduct | null> {
-  // First try the 'all' collection
-  let products = await getProducts();
-  let found = products.find(p => p.slug === slug);
-  if (found) return found;
-
-  // If not found in the first page of 'all', search in other collections
-  const collections = await getCollections();
-  for (const collection of collections) {
-    if (collection.slug === 'all') continue;
-    const collProducts = await getCollectionProducts(collection.slug);
-    found = collProducts.find(p => p.slug === slug);
-    if (found) return found;
-  }
-  
-  return null;
+  // Search ALL pages so products beyond the first page are found
+  const products = await getAllProducts();
+  return products.find((p) => p.slug === slug) ?? null;
 }
 
 export interface FourthwallCollection {
