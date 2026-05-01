@@ -55,10 +55,10 @@ export async function getProductsPage(
   return { products, total, page, pageSize, totalPages };
 }
 
-// Legacy helper — returns first page of products (used by other parts of the app)
+// Default products fetch — uses API default limit (safe for all environments)
 export async function getProducts(): Promise<FourthwallProduct[]> {
   const res = await fetch(
-    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}&page_size=100`,
+    `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}`,
     fetchOptions
   );
 
@@ -69,6 +69,26 @@ export async function getProducts(): Promise<FourthwallProduct[]> {
 
   const data = await res.json();
   return data.results || [];
+}
+
+// Tries to fetch all products at once (used by generateStaticParams at build time)
+export async function getAllProducts(): Promise<FourthwallProduct[]> {
+  // Try with a high page_size first; fall back to default if it fails
+  const tryFetch = async (params: string) => {
+    const res = await fetch(
+      `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}${params}`,
+      fetchOptions
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.results as FourthwallProduct[]) || [];
+  };
+
+  const withLimit = await tryFetch("&page_size=200");
+  if (withLimit && withLimit.length > 0) return withLimit;
+
+  // Fallback: plain fetch
+  return (await tryFetch("")) ?? [];
 }
 
 export async function getProductBySlug(slug: string): Promise<FourthwallProduct | null> {

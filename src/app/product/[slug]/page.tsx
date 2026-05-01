@@ -1,4 +1,4 @@
-import { getProductBySlug, getProducts } from "@/lib/fourthwall";
+import { getProductBySlug, getProducts, getAllProducts } from "@/lib/fourthwall";
 import ProductActions from "@/components/ProductActions";
 import ImageGallery from "@/components/ImageGallery";
 import RelatedProducts from "@/components/RelatedProducts";
@@ -6,11 +6,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
 
+// Allow SSR fallback for products added after the last build
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+  try {
+    const products = await getAllProducts();
+    console.log(`generateStaticParams: pre-building ${products.length} product pages`);
+    return products.map((product) => ({
+      slug: product.slug,
+    }));
+  } catch (err) {
+    console.error("generateStaticParams failed, falling back to SSR for all routes", err);
+    return [];
+  }
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
