@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getCurrentUser, signOut } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
 import { useCart } from "@/context/CartContext";
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const { totalItems } = useCart();
 
   useEffect(() => {
@@ -85,13 +86,22 @@ export default function Navbar() {
           </span>
         </Link>
         <div className="hidden md:flex items-center space-x-8">
-          <Link className="text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" href="/">
+          <Link 
+            className={pathname === "/" || pathname?.startsWith("/product") ? "text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" : "text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors"} 
+            href="/"
+          >
             Shop
           </Link>
-          <Link className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors" href="/collections">
+          <Link 
+            className={pathname === "/collections" ? "text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" : "text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors"} 
+            href="/collections"
+          >
             Collections
           </Link>
-          <Link className="text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors" href="/about">
+          <Link 
+            className={pathname === "/about" ? "text-slate-900 dark:text-white font-semibold border-b-2 border-orange-600 pb-1" : "text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-colors"} 
+            href="/about"
+          >
             About
           </Link>
         </div>
