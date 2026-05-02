@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getCurrentUser, signOut } from "aws-amplify/auth";
 import { Hub } from "aws-amplify/utils";
 import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const { totalItems } = useCart();
 
   useEffect(() => {
@@ -46,6 +51,21 @@ export default function Navbar() {
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}#products`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
   return (
     <nav className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm sticky top-0 z-50">
       <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1280px] mx-auto font-['Space_Grotesk'] antialiased">
@@ -75,10 +95,36 @@ export default function Navbar() {
             About
           </Link>
         </div>
-        <div className="flex items-center space-x-5">
-          <button className="p-2 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-md transition-all active:opacity-80 active:scale-95">
-            <span className="material-symbols-outlined text-slate-900 dark:text-slate-50">search</span>
-          </button>
+        <div className="flex items-center space-x-2 md:space-x-5">
+          {/* Search Toggle */}
+          <div className="relative flex items-center">
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center ${
+                isSearchOpen ? "w-48 md:w-64 opacity-100 mr-2" : "w-0 opacity-0"
+              }`}
+            >
+              <form onSubmit={handleSearchSubmit} className="w-full">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => !searchQuery && setIsSearchOpen(false)}
+                  className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full px-4 py-1.5 text-sm focus:ring-2 focus:ring-orange-500 outline-none text-slate-900 dark:text-white placeholder-slate-400"
+                />
+              </form>
+            </div>
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 rounded-md transition-all active:opacity-80 active:scale-95 z-10"
+              aria-label="Toggle search"
+            >
+              <span className="material-symbols-outlined text-slate-900 dark:text-slate-50">
+                {isSearchOpen ? "close" : "search"}
+              </span>
+            </button>
+          </div>
           
           {isAuthenticated ? (
             <div className="relative group">

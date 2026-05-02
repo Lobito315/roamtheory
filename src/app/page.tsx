@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { getProductsPage } from "@/lib/fourthwall";
+import { getAllProducts } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
+import HeroVideo from "@/components/HeroVideo";
+import ShopFilters from "@/components/ShopFilters";
 import HeroVideo from "@/components/HeroVideo";
 
 const PAGE_SIZE = 9; // products per page (3×3 grid)
@@ -8,15 +10,69 @@ const PAGE_SIZE = 9; // products per page (3×3 grid)
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; category?: string; maxPrice?: string; inStock?: string; sort?: string }>;
 }) {
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, q, category, maxPrice, inStock, sort } = await searchParams;
   const currentPage = Math.max(1, parseInt(pageParam || "1", 10));
 
-  const { products, total, totalPages } = await getProductsPage(currentPage, PAGE_SIZE);
+  // 1. Fetch all products
+  const allProducts = await getAllProducts();
+
+  // 2. Filter products based on search params
+  let filteredProducts = allProducts;
+
+  if (q) {
+    const lowerQ = q.toLowerCase();
+    filteredProducts = filteredProducts.filter(
+      (p) => p.name.toLowerCase().includes(lowerQ) || (p.description || "").toLowerCase().includes(lowerQ)
+    );
+  }
+
+  if (category && category !== "All") {
+    const lowerCat = category.toLowerCase();
+    if (lowerCat === "tech") {
+      filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes("case") || p.name.toLowerCase().includes("sleeve"));
+    } else if (lowerCat === "apparel") {
+      filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes("hoodie") || p.name.toLowerCase().includes("shirt") || p.name.toLowerCase().includes("tee"));
+    } else if (lowerCat === "lifestyle") {
+      filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes("tumbler") || p.name.toLowerCase().includes("mug"));
+    }
+  }
+
+  if (maxPrice) {
+    const max = parseFloat(maxPrice);
+    filteredProducts = filteredProducts.filter((p) => {
+      const price = p.variants[0]?.unitPrice.value || 0;
+      return price <= max;
+    });
+  }
+
+  // 3. Sort products
+  if (sort === "Price: Low to High") {
+    filteredProducts.sort((a, b) => (a.variants[0]?.unitPrice.value || 0) - (b.variants[0]?.unitPrice.value || 0));
+  } else if (sort === "Price: High to Low") {
+    filteredProducts.sort((a, b) => (b.variants[0]?.unitPrice.value || 0) - (a.variants[0]?.unitPrice.value || 0));
+  }
+
+  // 4. Paginate
+  const total = filteredProducts.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const products = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
+
+  // Helper to build URL with preserved search params
+  const buildPageUrl = (newPage: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (category) params.set("category", category);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (inStock) params.set("inStock", inStock);
+    if (sort) params.set("sort", sort);
+    params.set("page", newPage.toString());
+    return `/?${params.toString()}#products`;
+  };
 
   return (
     <main className="max-w-[1280px] mx-auto px-6 pt-12 pb-xl">
@@ -47,45 +103,20 @@ export default async function Home({
       <div id="products" className="flex flex-col md:flex-row gap-lg">
         {/* Sidebar Filters */}
         <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="sticky top-24 space-y-xl">
-            <section>
-              <h3 className="font-h3 text-label-caps text-on-surface-variant uppercase mb-md tracking-widest">Category</h3>
-              <div className="space-y-3">
-                {["Apparel", "Tech", "Lifestyle"].map((cat) => (
-                  <label key={cat} className="flex items-center cursor-pointer group">
-                    <input defaultChecked={cat === "Apparel"} className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox" />
-                    <span className="ml-3 font-medium text-slate-600 group-hover:text-primary transition-colors">{cat}</span>
-                  </label>
-                ))}
-              </div>
-            </section>
-            <section>
-              <h3 className="font-h3 text-label-caps text-on-surface-variant uppercase mb-md tracking-widest">Price Range</h3>
-              <div className="space-y-4">
-                <input className="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" max="1000" min="0" step="50" type="range" />
-                <div className="flex justify-between text-label-caps text-slate-400">
-                  <span>$0</span><span>$1,000+</span>
-                </div>
-              </div>
-            </section>
-            <section>
-              <h3 className="font-h3 text-label-caps text-on-surface-variant uppercase mb-md tracking-widest">Availability</h3>
-              <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-slate-100">
-                <span className="text-sm font-medium">In Stock Only</span>
-                <button className="w-10 h-5 bg-primary rounded-full relative transition-colors">
-                  <span className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></span>
-                </button>
-              </div>
-            </section>
-          </div>
+          <ShopFilters />
         </aside>
 
         {/* Product Grid */}
         <div className="flex-grow">
           <div className="flex justify-between items-center mb-8">
-            <span className="text-label-caps text-on-surface-variant">
-              Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, total)} of {total} products
-            </span>
+            <div className="flex flex-col mb-4">
+              {q && (
+                <h2 className="text-2xl font-bold mb-2">Search results for "{q}"</h2>
+              )}
+              <span className="text-label-caps text-on-surface-variant">
+                Showing {total > 0 ? (currentPage - 1) * PAGE_SIZE + 1 : 0}–{Math.min(currentPage * PAGE_SIZE, total)} of {total} products
+              </span>
+            </div>
             <div className="flex items-center space-x-2">
               <span className="text-label-caps text-on-surface-variant">Sort by</span>
               <select className="bg-transparent border-none font-medium text-sm focus:ring-0 cursor-pointer">
@@ -140,7 +171,7 @@ export default async function Home({
               {/* Prev */}
               {hasPrev ? (
                 <Link
-                  href={`/?page=${currentPage - 1}#products`}
+                  href={buildPageUrl(currentPage - 1)}
                   className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors"
                 >
                   <span className="material-symbols-outlined">chevron_left</span>
@@ -155,7 +186,7 @@ export default async function Home({
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <Link
                   key={p}
-                  href={`/?page=${p}#products`}
+                  href={buildPageUrl(p)}
                   className={`w-12 h-12 flex items-center justify-center font-bold transition-colors ${
                     p === currentPage
                       ? "bg-slate-900 text-white"
@@ -169,7 +200,7 @@ export default async function Home({
               {/* Next */}
               {hasNext ? (
                 <Link
-                  href={`/?page=${currentPage + 1}#products`}
+                  href={buildPageUrl(currentPage + 1)}
                   className="w-12 h-12 flex items-center justify-center border border-slate-200 hover:bg-slate-100 transition-colors"
                 >
                   <span className="material-symbols-outlined">chevron_right</span>

@@ -33,17 +33,17 @@ export default function Footer() {
         <div>
           <h4 className="font-bold text-slate-900 dark:text-slate-50 mb-6 uppercase tracking-widest text-[10px]">Support</h4>
           <ul className="space-y-4">
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Shipping</Link></li>
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Returns</Link></li>
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Contact</Link></li>
+            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="/policies/shipping">Shipping</Link></li>
+            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="/policies/returns">Returns</Link></li>
+            <li><a className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="mailto:support@anchornone.com">Contact</a></li>
           </ul>
         </div>
         <div>
           <h4 className="font-bold text-slate-900 dark:text-slate-50 mb-6 uppercase tracking-widest text-[10px]">Company</h4>
           <ul className="space-y-4">
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Newsletter</Link></li>
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Privacy</Link></li>
-            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="#">Terms</Link></li>
+            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="/about">About Us</Link></li>
+            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="/policies/privacy">Privacy</Link></li>
+            <li><Link className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:underline transition-all" href="/policies/terms">Terms</Link></li>
           </ul>
         </div>
         <div>
