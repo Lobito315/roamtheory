@@ -3,7 +3,6 @@ import { getAllProducts } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
 import HeroVideo from "@/components/HeroVideo";
 import ShopFilters from "@/components/ShopFilters";
-import HeroVideo from "@/components/HeroVideo";
 
 const PAGE_SIZE = 9; // products per page (3×3 grid)
 
