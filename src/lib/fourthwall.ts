@@ -136,31 +136,17 @@ export async function getCollections(): Promise<FourthwallCollection[]> {
   return data.results || [];
 }
 
-// Paginates through ALL pages of a specific collection
 export async function getCollectionProducts(handle: string): Promise<FourthwallProduct[]> {
-  const PAGE_SIZE = 9;
-  const all: FourthwallProduct[] = [];
-  let page = 1;
+  const res = await fetch(
+    `${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}`,
+    fetchOptions
+  );
 
-  while (true) {
-    const res = await fetch(
-      `${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}&page=${page}&page_size=${PAGE_SIZE}`,
-      fetchOptions
-    );
-
-    if (!res.ok) {
-      console.error(`getCollectionProducts (${handle}) page ${page} failed:`, await res.text());
-      break;
-    }
-
-    const data = await res.json();
-    const results: FourthwallProduct[] = data.results || [];
-    all.push(...results);
-
-    const total: number = data.total_results ?? data.total ?? results.length;
-    if (all.length >= total || results.length < PAGE_SIZE) break;
-    page++;
+  if (!res.ok) {
+    console.error(`Failed to fetch products for collection ${handle}`, await res.text());
+    return [];
   }
 
-  return all;
+  const data = await res.json();
+  return data.results || [];
 }
