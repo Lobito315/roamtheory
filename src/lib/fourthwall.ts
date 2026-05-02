@@ -72,34 +72,25 @@ export async function getProducts(): Promise<FourthwallProduct[]> {
 }
 
 // Paginates through ALL pages of the Fourthwall API and returns every product.
+// Uses the same page_size as the shop page (known to work) for consistent results.
 // Used by generateStaticParams (build time) and getProductBySlug.
 export async function getAllProducts(): Promise<FourthwallProduct[]> {
-  const pageSize = 20;
-  const all: FourthwallProduct[] = [];
-  let page = 1;
+  const PAGE_SIZE = 9; // Same as shop — guaranteed to work with Fourthwall API
 
-  while (true) {
-    const res = await fetch(
-      `${API_URL}/collections/all/products?storefront_token=${STOREFRONT_TOKEN}&page=${page}&page_size=${pageSize}`,
-      fetchOptions
-    );
+  // Fetch page 1 first to discover totalPages
+  const first = await getProductsPage(1, PAGE_SIZE);
+  const all: FourthwallProduct[] = [...first.products];
 
-    if (!res.ok) {
-      console.error(`getAllProducts page ${page} failed:`, await res.text());
-      break;
+  // Fetch remaining pages in parallel for speed
+  if (first.totalPages > 1) {
+    const pageNumbers = Array.from({ length: first.totalPages - 1 }, (_, i) => i + 2);
+    const rest = await Promise.all(pageNumbers.map((p) => getProductsPage(p, PAGE_SIZE)));
+    for (const { products } of rest) {
+      all.push(...products);
     }
-
-    const data = await res.json();
-    const results: FourthwallProduct[] = data.results || [];
-    all.push(...results);
-
-    // Detect last page
-    const total: number = data.total_results ?? data.total ?? results.length;
-    if (all.length >= total || results.length < pageSize) break;
-    page++;
   }
 
-  console.log(`getAllProducts: fetched ${all.length} products across ${page} page(s)`);
+  console.log(`getAllProducts: fetched ${all.length} products across ${first.totalPages} page(s)`);
   return all;
 }
 
