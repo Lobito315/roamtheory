@@ -37,7 +37,7 @@ export default function Viewer360({ images }: Viewer360Props) {
     if (autoRotate && !isDragging && imagesLoaded) {
       interval = setInterval(() => {
         setCurrentFrame((prev) => (prev + 1) % images.length);
-      }, 150); // Speed of auto-rotation
+      }, 300); // Speed of auto-rotation
     }
     return () => clearInterval(interval);
   }, [autoRotate, isDragging, images.length, imagesLoaded]);
