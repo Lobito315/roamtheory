@@ -95,9 +95,22 @@ export async function getAllProducts(): Promise<FourthwallProduct[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<FourthwallProduct | null> {
-  // Search ALL pages so products beyond the first page are found
-  const products = await getAllProducts();
-  return products.find((p) => p.slug === slug) ?? null;
+  // 1. Search ALL pages of the 'all' collection
+  const allProducts = await getAllProducts();
+  let found = allProducts.find((p) => p.slug === slug);
+  if (found) return found;
+
+  // 2. If not found in 'all', it might be exclusively in a custom collection.
+  // Search through all other collections.
+  const collections = await getCollections();
+  for (const collection of collections) {
+    if (collection.slug === 'all') continue;
+    const collProducts = await getCollectionProducts(collection.slug);
+    found = collProducts.find((p) => p.slug === slug);
+    if (found) return found;
+  }
+
+  return null;
 }
 
 export interface FourthwallCollection {
@@ -123,17 +136,31 @@ export async function getCollections(): Promise<FourthwallCollection[]> {
   return data.results || [];
 }
 
+// Paginates through ALL pages of a specific collection
 export async function getCollectionProducts(handle: string): Promise<FourthwallProduct[]> {
-  const res = await fetch(
-    `${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}`,
-    fetchOptions
-  );
-  
-  if (!res.ok) {
-    console.error(`Failed to fetch products for collection ${handle}`, await res.text());
-    return [];
+  const PAGE_SIZE = 9;
+  const all: FourthwallProduct[] = [];
+  let page = 1;
+
+  while (true) {
+    const res = await fetch(
+      `${API_URL}/collections/${handle}/products?storefront_token=${STOREFRONT_TOKEN}&page=${page}&page_size=${PAGE_SIZE}`,
+      fetchOptions
+    );
+
+    if (!res.ok) {
+      console.error(`getCollectionProducts (${handle}) page ${page} failed:`, await res.text());
+      break;
+    }
+
+    const data = await res.json();
+    const results: FourthwallProduct[] = data.results || [];
+    all.push(...results);
+
+    const total: number = data.total_results ?? data.total ?? results.length;
+    if (all.length >= total || results.length < PAGE_SIZE) break;
+    page++;
   }
 
-  const data = await res.json();
-  return data.results || [];
+  return all;
 }
