@@ -4,7 +4,7 @@ import { useState } from "react";
 import Viewer360 from "./Viewer360";
 
 interface ImageGalleryProps {
-  images: { url: string }[];
+  images: { url: string; width?: number; height?: number }[];
   productName: string;
 }
 
@@ -13,12 +13,16 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   const [isHovered, setIsHovered] = useState(false);
   const [viewMode, setViewMode] = useState<"gallery" | "360">("gallery");
 
+  // We only use vertical images for the 360 viewer to prevent layout shifts or breaking the rotation sequence
+  const verticalImages = images?.filter((img) => img.height && img.width && img.height > img.width) || [];
+  
   const isLifestyle = productName.toLowerCase().includes("mug") || productName.toLowerCase().includes("tumbler");
-  const is360Eligible = isLifestyle && images && images.length >= 8;
+  // Tumblers have 4 images, Mugs have 12. So we use >= 4.
+  const is360Eligible = isLifestyle && verticalImages.length >= 4;
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-square bg-surface-container rounded-2xl overflow-hidden border border-outline-variant flex items-center justify-center text-slate-300">
+      <div className="aspect-[3/4] bg-surface-container rounded-2xl overflow-hidden border border-outline-variant flex items-center justify-center text-slate-300">
         <span className="material-symbols-outlined text-6xl">image</span>
       </div>
     );
@@ -43,12 +47,12 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
 
       {/* Main Image Viewer */}
       <div
-        className={`relative aspect-square bg-surface-container rounded-2xl overflow-hidden border border-outline-variant ${viewMode === "gallery" ? "cursor-zoom-in" : ""}`}
+        className={`relative aspect-[3/4] bg-surface-container rounded-2xl overflow-hidden border border-outline-variant ${viewMode === "gallery" ? "cursor-zoom-in" : ""}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {viewMode === "360" && is360Eligible ? (
-          <Viewer360 images={images.map(i => i.url)} />
+          <Viewer360 images={verticalImages.map(i => i.url)} />
         ) : (
           <>
             <img

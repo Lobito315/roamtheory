@@ -19,7 +19,7 @@ export interface FourthwallProduct {
   name: string;
   slug: string;
   description: string;
-  images: { url: string }[];
+  images: { url: string; width?: number; height?: number }[];
   variants: FourthwallVariant[];
 }
 
