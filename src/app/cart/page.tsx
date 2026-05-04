@@ -1,13 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { getRelatedProductsAction } from "./actions";
+import type { FourthwallProduct } from "@/lib/fourthwall";
 
 const TAX_RATE = 0.085;
 const FREE_SHIPPING_THRESHOLD = 150;
 
 export default function Cart() {
   const { items, removeItem, updateQuantity, subtotal, checkoutUrl } = useCart();
+  const [relatedProducts, setRelatedProducts] = useState<FourthwallProduct[]>([]);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(true);
+
+  useEffect(() => {
+    getRelatedProductsAction().then((products) => {
+      setRelatedProducts(products);
+      setIsLoadingRelated(false);
+    });
+  }, []);
+
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 15;
   const tax = subtotal * TAX_RATE;
   const total = subtotal + shipping + tax;
@@ -179,23 +192,43 @@ export default function Cart() {
       {items.length > 0 && (
         <section className="mt-24">
           <h2 className="font-h2 text-h2 mb-8">Essential Add-ons</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { name: "Tech Care Kit", price: 22, alt: "Cleaning Kit", src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAhtoIugtUBybZ1IzHyMHR_AXPkzUkTyqEKYdqEm-SgG-U5XCiGUCa_q_KM-NscQyorlwaYVR7wab10ggrlsETCMLI8c2WC0ablgjXYaCvTqt3A_etA9KzO0ErVHO_zCiT2iXfuimOoe-J9l64N43S3w21t9J2armDTi3ooTrqkjjOJNl9FX-zCrpYf1A8BeTVg0zevejjui-ubcJ9wgik3fLSfxA1MpqqZ5i5R4jPMggZ9SsnMfN8BszWOx4sxY0DAMq0IgJ6sYLo" },
-              { name: "Premium ID Tag", price: 15, alt: "Luggage Tag", src: "https://lh3.googleusercontent.com/aida-public/AB6AXuD9vKi_Qc7qyCvdA0zdRMn_-4PtQVSmZ1KfEmCViQXy7TQTaL8VAkVlO1WhzsGboo1UlUmMVFgSDVwSx-7Lb0GtPA3TCueCKcjJbrgM76bexALd9S87g1IoRd2gZBN4_TV0hTfo-VoI2tGOxU2DWE4XLzaQ7mlj0f8Pr6RSMcArBh5YbsdXwhYjrw900oMsTltDLG8Rid7vdbYOOSIlEK3171FfAXdY1QjB58_hSVCNMGvDQ33x0OU1J-SWlCRp0Rw_ePtmvT3DMCk" },
-              { name: "Magnetic Cable Ties", price: 12, alt: "Cable Organizer", src: "https://lh3.googleusercontent.com/aida-public/AB6AXuA0r0AVWQiN_Q3SubI_IKqmu1lMjJFzw-rmlLwZMJo5cjinYGPIGUN37x6BE4fiao1C6tqzi8f2_thSyAhujcIxppgQlKXHNbzuh8A496SSWboSuATqFXaFTsPASStLcun2a9vVrbShjxZHgJxSFfY0bO3hARQxzeUatQQITGQp4G5OVbVgaWKwor0Yhlbglmw2E-KpBBFIOoUFKbKcxiWOg6iGC4H1K6sKUERTDPU68F06sGRHjI7WbLtH7kNy8lVYnh-7Yg7P0Ho" },
-              { name: "Compression Cube S", price: 28, alt: "Packing Cube", src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBte0wExqxpr1dYG4z7M8nCqhZi-Sislgn7NABBnz5gyuDVpMUX7a-oDQKSMZnNYD2roqQF_0UmCFhdhoBVQwF_3_Bp1bE-FRc6GwDqSyzpT2uenLG4vIndqvYiLrtGER3di6dtoeVV2LRzkBU2Jm9EI5ZytIalNFx4uoBoBT5ABKDfCRNeqsqTsllzRjB2Jb4mbp8QfJaKSwU6SdZ_Q0WVipHVLkVByHYllbjXbj0PqeGvipsHJdUFUtHXFnQUuuIAiTrTkfCKywo" },
-            ].map((item) => (
-              <div key={item.name} className="bg-white border border-outline-variant p-4 rounded-xl group">
-                <div className="aspect-square bg-surface-container rounded-lg mb-4 overflow-hidden">
-                  <img alt={item.alt} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={item.src} />
+          
+          {isLoadingRelated ? (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-white border border-outline-variant p-4 rounded-xl animate-pulse">
+                  <div className="aspect-square bg-slate-200 rounded-lg mb-4"></div>
+                  <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-slate-200 rounded w-1/4"></div>
                 </div>
-                <h4 className="font-medium text-on-background">{item.name}</h4>
-                <p className="text-on-surface-variant text-sm mt-1">${item.price}.00</p>
-                <button className="w-full mt-4 py-2 border border-primary text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all rounded">Add to Order</button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {relatedProducts.map((product) => {
+                const price = product.variants[0]?.unitPrice?.value || 0;
+                const image = product.images[0]?.url || "";
+                
+                return (
+                  <div key={product.id} className="bg-white border border-outline-variant p-4 rounded-xl group flex flex-col h-full">
+                    <Link href={`/product/${product.slug}`} className="flex-grow">
+                      <div className="aspect-square bg-surface-container rounded-lg mb-4 overflow-hidden relative">
+                        {image && <img alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={image} />}
+                      </div>
+                      <h4 className="font-medium text-on-background line-clamp-1">{product.name}</h4>
+                      <p className="text-on-surface-variant text-sm mt-1">${price.toFixed(2)}</p>
+                    </Link>
+                    <Link 
+                      href={`/product/${product.slug}`}
+                      className="block w-full mt-4 py-2 border border-primary text-primary font-bold text-xs uppercase tracking-widest text-center hover:bg-primary hover:text-white transition-all rounded"
+                    >
+                      View Product
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
     </main>
