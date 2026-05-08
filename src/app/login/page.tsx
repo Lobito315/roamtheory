@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, signInWithRedirect } from "aws-amplify/auth";
 import { useRouter } from "next/navigation";
 
@@ -46,7 +47,7 @@ export default function Login() {
           onClick={() => signInWithRedirect({ provider: 'Google' })}
           className="w-full py-3 bg-white border border-outline-variant text-slate-800 rounded-lg font-bold tracking-wide hover:bg-slate-50 transition-all flex items-center justify-center group mb-6 shadow-sm"
         >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5 mr-3" />
+          <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} className="mr-3" />
           Continue with Google
         </button>
 

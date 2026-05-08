@@ -63,12 +63,12 @@
   --spacing-container-max: 1280px;
   --spacing-sm: 16px;
 
-  --font-h1: "Space Grotesk", sans-serif;
-  --font-body-md: "Inter", sans-serif;
-  --font-body-lg: "Inter", sans-serif;
-  --font-h2: "Space Grotesk", sans-serif;
-  --font-h3: "Space Grotesk", sans-serif;
-  --font-label-caps: "Inter", sans-serif;
+  --font-h1: var(--font-space-grotesk), sans-serif;
+  --font-body-md: var(--font-inter), sans-serif;
+  --font-body-lg: var(--font-inter), sans-serif;
+  --font-h2: var(--font-space-grotesk), sans-serif;
+  --font-h3: var(--font-space-grotesk), sans-serif;
+  --font-label-caps: var(--font-inter), sans-serif;
 
   --text-h1: 48px;
   --text-h1--line-height: 1.1;

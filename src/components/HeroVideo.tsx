@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function HeroVideo() {
@@ -15,13 +16,19 @@ export default function HeroVideo() {
   return (
     <section className="mb-xl relative rounded-xl overflow-hidden min-h-[520px] md:min-h-[620px]">
       {/* Video Background */}
+      <Image
+        fill
+        priority
+        className="object-cover"
+        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
+        alt="Hero Background"
+      />
       <video
         autoPlay
         loop
         muted
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        poster="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop"
       >
         <source
           src="https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4"

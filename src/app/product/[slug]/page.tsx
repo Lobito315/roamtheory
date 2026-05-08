@@ -1,6 +1,5 @@
 import { getProductBySlug, getAllProducts } from "@/lib/fourthwall";
-import ProductActions from "@/components/ProductActions";
-import ImageGallery from "@/components/ImageGallery";
+import ProductInteractive from "@/components/ProductInteractive";
 import RelatedProducts from "@/components/RelatedProducts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -47,24 +46,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </nav>
 
       {/* Product detail */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Images */}
-        <ImageGallery images={product.images} productName={product.name} />
-
-        {/* Info & Actions */}
-        <div className="flex flex-col">
-          <h1 className="font-h1 text-h1 text-on-background mb-4">{product.name}</h1>
-
-          <div
-            className="prose prose-slate prose-p:text-on-surface-variant prose-headings:text-on-background mb-8"
-            dangerouslySetInnerHTML={{ __html: cleanDescription }}
-          />
-
-          <div className="mt-auto">
-            <ProductActions product={product} />
-          </div>
-        </div>
-      </div>
+      <ProductInteractive product={product} cleanDescription={cleanDescription} />
 
       {/* Related products */}
       <RelatedProducts products={allProducts} currentSlug={resolvedParams.slug} />

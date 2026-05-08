@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import Viewer360 from "./Viewer360";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Viewer360 = dynamic(() => import("./Viewer360"));
 
 interface ImageGalleryProps {
   images: { url: string; width?: number; height?: number }[];
@@ -12,6 +15,11 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [viewMode, setViewMode] = useState<"gallery" | "360">("gallery");
+
+  useEffect(() => {
+    setCurrentIndex(0);
+    setViewMode("gallery");
+  }, [images]);
 
   // We only use vertical images for the 360 viewer to prevent layout shifts or breaking the rotation sequence
   const verticalImages = images?.filter((img) => img.height && img.width && img.height > img.width) || [];
@@ -55,10 +63,13 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
           <Viewer360 images={verticalImages.map(i => i.url)} />
         ) : (
           <>
-            <img
+            <Image
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority={true}
               src={images[currentIndex].url}
               alt={`${productName} view ${currentIndex + 1}`}
-              className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 ease-out"
+              className="object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 ease-out"
               style={{
                 transform: isHovered ? "scale(1.65)" : "scale(1)",
                 transformOrigin: "center center",
@@ -87,16 +98,18 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
                 setCurrentIndex(i);
                 if (viewMode === "360") setViewMode("gallery"); // switch back to gallery if thumbnail clicked
               }}
-              className={`aspect-square bg-surface-container rounded-xl overflow-hidden border cursor-pointer transition-all ${
+              className={`relative aspect-square bg-surface-container rounded-xl overflow-hidden border cursor-pointer transition-all ${
                 i === currentIndex && viewMode === "gallery"
                   ? "border-primary ring-2 ring-primary/20"
                   : "border-outline-variant hover:border-primary/50"
               }`}
             >
-              <img
+              <Image
+                fill
+                sizes="(max-width: 768px) 25vw, 15vw"
                 src={img.url}
                 alt={`${productName} thumbnail ${i + 1}`}
-                className="w-full h-full object-cover"
+                className="object-cover"
               />
             </div>
           ))}

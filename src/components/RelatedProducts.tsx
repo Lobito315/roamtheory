@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FourthwallProduct } from "@/lib/fourthwall";
 
 interface RelatedProductsProps {
@@ -58,10 +59,12 @@ export default function RelatedProducts({ products, currentSlug }: RelatedProduc
               {/* Image */}
               <div className="aspect-square overflow-hidden bg-surface-container-high relative">
                 {image ? (
-                  <img
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     src={image}
                     alt={product.name}
-                    className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 group-hover:scale-110"
+                    className="object-contain mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 group-hover:scale-110"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-on-surface-variant/40">

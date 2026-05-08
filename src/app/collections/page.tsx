@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getCollections, getCollectionProducts } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
 
@@ -61,7 +62,9 @@ export default async function CollectionsPage() {
                   <Link href={`/product/${product.slug}`} key={product.id} className="group border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden flex flex-col cursor-pointer hover:shadow-xl hover:border-orange-200 dark:hover:border-orange-900/50 transition-all duration-300">
                     <div className="aspect-[4/5] overflow-hidden bg-slate-50 dark:bg-slate-800/50 relative p-6 flex items-center justify-center">
                       {product.images.length > 0 ? (
-                        <img className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform duration-700" alt={product.name} src={product.images[0].url} />
+                        <div className="relative w-full h-full">
+                          <Image fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" className="object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform duration-700" alt={product.name} src={product.images[0].url} />
+                        </div>
                       ) : (
                         <span className="material-symbols-outlined text-4xl text-slate-300">image</span>
                       )}

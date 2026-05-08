@@ -12,6 +12,7 @@ export interface FourthwallVariant {
     value: number;
     currency: string;
   };
+  images?: { url: string; width?: number; height?: number }[];
 }
 
 export interface FourthwallProduct {

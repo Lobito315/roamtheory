@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getAllProducts } from "@/lib/fourthwall";
 import AddToCartButton from "@/components/AddToCartButton";
 import HeroVideo from "@/components/HeroVideo";
@@ -84,9 +85,9 @@ export default async function Home({
             { label: "Apparel", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAkA_A-kQDi_xpJBQcCUeiIyZ_0O8CPWrvM3dM3RX5jWi2LheLtjtkyoF_JZIq-Qm-aWcmpvQEqRoZpN5sQsKaRHstb1HOZ1FWIP7cKAYHSFgo2vgyYYXQ6vD-4kloCkb1Tu4krIILEUpVrLj66CujrnIna2E8nDwEJjBCScyYw01zIfiTBolcjttH_QSqj3dSJ-ioBjR1o3dYS1bOGZbC0DA4-IxL7-4p9-74MyHxmJ0f0cn52J3e6n6PgBb8lJnu4ljMgDbAnXrI" },
             { label: "Tech Accessories", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAo1rJTNroF_9Er5yaL_2erunS615rNIKkHIyGpSyUPYpCOAd768YPriG_HFlJubebzog99w8ckDFA5Cas4iv5a3OLB-F1hqTWpmBWrMSMz_d7m3JJJ7aoMvTdamHJBsP0ZIhgT6myPUpDxmqscA8t8WkPOykYCPFRLHxWJ512IW2TYMl0DQMDynhnB3KBB5JkP5gsQAWHv34buRSE4w1u117DMIKEzK8Mc3pwjXsZIrnB6YVaAsdUjYFrp13SzLgAXiosAXpI0PvM" },
             { label: "Lifestyle Essentials", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuABZkd2Vb3W5fLhSDaRlhSg2Bd8KZABFBTDwh5QcfCvLSBzhRtxROOQe9EjiIukcBOFWVX0iANiytugYWmfTN-RWTsLc1k5PT2wEZih_YjHsbhMVB242mqYS50cKPrRoMD4qJP08vQnK7OZYlomAgtuvq6HNzxRgFUXKcW3YDBBbtoBceeWs7s879Hv_nguZTIO3lsZD-T_L-jD6IDrH4E8MTp47PXuA0Cp4N76HizcyKVbqd6gcl5ktEYNsNljYSiEkJuLaq5InJs" },
-          ].map(({ label, img }) => (
+          ].map(({ label, img }, idx) => (
             <a key={label} className="group relative aspect-[16/9] md:aspect-[4/3] overflow-hidden bg-slate-200 border border-slate-200 cursor-pointer" href="#">
-              <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.85] group-hover:brightness-90" alt={label} src={img} />
+              <Image fill sizes="(max-width: 768px) 100vw, 33vw" priority={idx === 0} className="object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.85] group-hover:brightness-90" alt={label} src={img} />
               <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-black/60 to-transparent">
                 <h2 className="font-h2 text-white text-2xl mb-1">{label}</h2>
                 <p className="text-white/80 text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
@@ -137,7 +138,9 @@ export default async function Home({
                 <Link href={`/product/${product.slug}`} key={product.id} className="group border border-slate-200 bg-white product-card-shadow overflow-hidden flex flex-col cursor-pointer">
                   <div className="aspect-[4/5] overflow-hidden bg-slate-100 relative p-4 flex items-center justify-center">
                     {product.images.length > 0 ? (
-                      <img className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700" alt={product.name} src={product.images[0].url} />
+                      <div className="relative w-full h-full">
+                        <Image fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700" alt={product.name} src={product.images[0].url} />
+                      </div>
                     ) : (
                       <span className="material-symbols-outlined text-4xl text-slate-300">image</span>
                     )}

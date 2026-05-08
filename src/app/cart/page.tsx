@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { getRelatedProductsAction } from "./actions";
 import type { FourthwallProduct } from "@/lib/fourthwall";
@@ -72,8 +73,8 @@ export default function Cart() {
             <div className="space-y-6">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-6 p-6 bg-surface-container-lowest border border-outline-variant shadow-[0px_4px_20px_rgba(15,23,42,0.05)] rounded-xl group relative">
-                  <div className="w-32 h-32 md:w-40 md:h-40 bg-surface-container overflow-hidden rounded-lg flex-shrink-0">
-                    <img alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={item.image} />
+                  <div className="w-32 h-32 md:w-40 md:h-40 bg-surface-container overflow-hidden rounded-lg flex-shrink-0 relative">
+                    <Image fill sizes="(max-width: 768px) 128px, 160px" alt={item.name} className="object-cover group-hover:scale-105 transition-transform duration-500" src={item.image} />
                   </div>
                   <div className="flex-grow flex flex-col justify-between py-1">
                     <div>
@@ -213,7 +214,7 @@ export default function Cart() {
                   <div key={product.id} className="bg-white border border-outline-variant p-4 rounded-xl group flex flex-col h-full">
                     <Link href={`/product/${product.slug}`} className="flex-grow">
                       <div className="aspect-square bg-surface-container rounded-lg mb-4 overflow-hidden relative">
-                        {image && <img alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src={image} />}
+                        {image && <Image fill sizes="(max-width: 768px) 100vw, 25vw" alt={product.name} className="object-cover group-hover:scale-110 transition-transform duration-500" src={image} />}
                       </div>
                       <h4 className="font-medium text-on-background line-clamp-1">{product.name}</h4>
                       <p className="text-on-surface-variant text-sm mt-1">${price.toFixed(2)}</p>

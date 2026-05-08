@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { FourthwallProduct, FourthwallVariant } from "@/lib/fourthwall";
 
-export default function ProductActions({ product }: { product: FourthwallProduct }) {
+interface ProductActionsProps {
+  product: FourthwallProduct;
+  selectedVariant: FourthwallVariant;
+  onVariantSelect: (variant: FourthwallVariant) => void;
+}
+
+export default function ProductActions({ product, selectedVariant, onVariantSelect }: ProductActionsProps) {
   const { addItem, checkoutUrl } = useCart();
-  const [selectedVariant, setSelectedVariant] = useState<FourthwallVariant>(product.variants[0]);
   const [added, setAdded] = useState(false);
 
   const handleAdd = () => {
@@ -16,7 +21,7 @@ export default function ProductActions({ product }: { product: FourthwallProduct
       variantId: selectedVariant.id,
       name: `${product.name} - ${selectedVariant.name.split(" - ")[1] || selectedVariant.name}`,
       price: selectedVariant.unitPrice ? selectedVariant.unitPrice.value : 0,
-      image: product.images[0]?.url || "",
+      image: selectedVariant.images?.[0]?.url || product.images[0]?.url || "",
       category: "Merch",
     });
     setAdded(true);
@@ -44,7 +49,7 @@ export default function ProductActions({ product }: { product: FourthwallProduct
             {product.variants.map((variant) => (
               <button
                 key={variant.id}
-                onClick={() => setSelectedVariant(variant)}
+                onClick={() => onVariantSelect(variant)}
                 className={`px-4 py-2 text-sm border rounded-lg transition-all ${
                   selectedVariant.id === variant.id
                     ? "border-primary bg-primary text-white"
