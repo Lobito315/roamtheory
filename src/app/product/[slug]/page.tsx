@@ -1,4 +1,4 @@
-import { getProductBySlug, getAllProducts } from "@/lib/fourthwall";
+import { getProductBySlug, getAllProducts, getCollections, getCollectionProducts } from "@/lib/fourthwall";
 import ProductInteractive from "@/components/ProductInteractive";
 import RelatedProducts from "@/components/RelatedProducts";
 import Link from "next/link";
@@ -24,14 +24,35 @@ export async function generateStaticParams() {
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
 
-  // Fetch current product and all products in parallel
-  const [product, allProducts] = await Promise.all([
+  // Fetch current product, all products, and collections in parallel
+  const [product, allProducts, collections] = await Promise.all([
     getProductBySlug(resolvedParams.slug),
     getAllProducts(),
+    getCollections(),
   ]);
 
   if (!product) {
     notFound();
+  }
+
+  // Find related products from the same collection
+  let relatedProducts = allProducts;
+  const validCollections = collections.filter(c => c.slug !== 'all');
+  
+  // Fetch products for all valid collections
+  const collectionsWithProducts = await Promise.all(
+    validCollections.map(async (col) => ({
+      ...col,
+      products: await getCollectionProducts(col.slug)
+    }))
+  );
+
+  // Find the first collection that contains the current product
+  for (const col of collectionsWithProducts) {
+    if (col.products.some(p => p.slug === resolvedParams.slug)) {
+      relatedProducts = col.products;
+      break;
+    }
   }
 
   const cleanDescription = DOMPurify.sanitize(product.description || "");
@@ -49,7 +70,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <ProductInteractive product={product} cleanDescription={cleanDescription} />
 
       {/* Related products */}
-      <RelatedProducts products={allProducts} currentSlug={resolvedParams.slug} />
+      <RelatedProducts products={relatedProducts} currentSlug={resolvedParams.slug} />
     </main>
   );
 }
